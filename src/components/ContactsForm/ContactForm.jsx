@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import {
   FormButton,
   Label,
@@ -7,54 +6,45 @@ import {
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { nanoid } from 'nanoid';
 import * as yup from 'yup';
+import { add, getItemsValue } from 'redux/contacts';
+import { useSelector, useDispatch } from 'react-redux';
 
 const schema = yup.object().shape({
   name: yup.string().min(2).required(),
   number: yup.string().length(7).required(),
 });
 
-export class ContactForm extends Component {
+export const ContactForm = () => {
+
+   const states = useSelector(getItemsValue);
+  const dispatch = useDispatch();
   
-  normalizedNumber = str => {
-    const normalizedNumber =
-      str[0] + str[1] + str[2] + '-' + str[3] + str[4] + '-' + str[5] + str[6];
-    return normalizedNumber;
-  };
 
-  normalizedName = str => {
-    const normalizedName = str
-      .split(' ')
-      .map(item => item[0].toUpperCase() + item.slice(1))
-      .join(' ');
-    return normalizedName;
-  };
-
-  handleSubmit = (values, { resetForm }) => {
-    const newName = {
+  const handleSubmit = ({name, number}, { resetForm }) => {
+    const newContact = {
       id: nanoid(),
-      name: this.normalizedName(values.name),
-      number: this.normalizedNumber(values.number),
+      name,
+      number,
     };
-    this.props.onSubmit(newName);
+    states.find(state => state.name === newContact.name) ? 
+      alert(`${name} is already in contacts. `)
+      : dispatch(add(newContact));
     resetForm();
   };
 
-  render() {
+ 
     return (
       <Formik
-        initialValues={{name: '', number: '',}}
-        onSubmit={this.handleSubmit}
+        initialValues={{name: '', number: ''}}
+        onSubmit={handleSubmit}
         validationSchema={schema}
       >
-        {props => (
           <Form>
             <Label>
               Name:
               <Field
                 type="text"
-                name="name"
-                onChange={props.handleChange}
-                value={props.values.name}
+                name="name"                
               />
               <ErrorMessage
                 name="name"
@@ -66,8 +56,6 @@ export class ContactForm extends Component {
               <Field
                 type="tel"
                 name="number"
-                onChange={props.handleChange}
-                value={props.values.number}
               />
               <ErrorMessage
                 name="number"
@@ -77,8 +65,6 @@ export class ContactForm extends Component {
 
             <FormButton type="submit">Add contact</FormButton>
           </Form>
-        )}
       </Formik>
     );
   }
-}
