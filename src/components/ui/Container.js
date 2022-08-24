@@ -3,12 +3,13 @@ import styled from 'styled-components';
 export const Container = styled.div`
   height: 100vh;
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 5px;
   font-size: 15px;
   color: #010101;
+  background-color: #31f589;
 `;
 
 export const Title = styled.h2`
